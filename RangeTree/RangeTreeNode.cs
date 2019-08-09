@@ -30,7 +30,7 @@ namespace RangeTree
                 this.rangeComparer = rangeComparer;
             }
 
-            center = default(TKey);
+            center = default;
             leftNode = null;
             rightNode = null;
             items = null;

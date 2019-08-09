@@ -20,7 +20,7 @@ namespace CommentTranlsator.Client
             _settings = settings;
         }
 
-        public async Task<IAPIResponse> Translate(string text)
+        public async Task<IAPIResponse> TranslateAsync(string text)
         {
             var request = new ApiRequest()
             {

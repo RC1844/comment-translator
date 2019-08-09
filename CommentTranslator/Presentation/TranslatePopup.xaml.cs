@@ -59,7 +59,7 @@ namespace CommentTranslator.Presentation
             tblDirection.Text = "Translating...";
 
             Task
-                .Run(() => CommentTranslatorPackage.TranslateClient.Translate(text))
+                .Run(() => CommentTranslatorPackage.TranslateClient.TranslateAsync(text))
                 .ContinueWith((data) =>
                 {
                     if (!_isClose)

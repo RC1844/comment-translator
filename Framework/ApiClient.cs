@@ -15,10 +15,11 @@ namespace Framework
             var apiResult = new ApiResponse();
 
             //Create http request content
-            var httpRequest = new HttpRequestMessage(new HttpMethod(request.Method), request.Url);
-
-            //Assign http content
-            httpRequest.Content = new ByteArrayContent(request.Body);
+            var httpRequest = new HttpRequestMessage(new HttpMethod(request.Method), request.Url)
+            {
+                //Assign http content
+                Content = new ByteArrayContent(request.Body)
+            };
 
             //Add header param
             foreach (var param in request.Headers.Keys)
@@ -27,8 +28,10 @@ namespace Framework
             }
 
             //Add Content type and charset
-            httpRequest.Content.Headers.ContentType = new MediaTypeHeaderValue(request.ContentType);
-            httpRequest.Content.Headers.ContentType.CharSet = request.Charset;
+            httpRequest.Content.Headers.ContentType = new MediaTypeHeaderValue(request.ContentType)
+            {
+                CharSet = request.Charset
+            };
 
 
             //Send Request
@@ -57,6 +60,7 @@ namespace Framework
                     apiResult.Code = (int)response.StatusCode;
                     apiResult.Message = response.StatusCode.ToString();
                     apiResult.Data = responseText;
+                    response.Dispose();
                 }
                 catch (Exception e)
                 {
@@ -65,7 +69,7 @@ namespace Framework
                     apiResult.Data = "";
                 }
             }
-
+            httpRequest.Dispose();
             return apiResult;
         }
     }

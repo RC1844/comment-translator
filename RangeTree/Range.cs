@@ -104,8 +104,7 @@ namespace RangeTree
         /// </returns>
         public override bool Equals(object obj)
         {
-            Range<T> range = obj as Range<T>;
-            if (range == null)
+            if (!(obj is Range<T> range))
             {
                 return false;
             }

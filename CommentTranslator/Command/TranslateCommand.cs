@@ -8,6 +8,7 @@ using CommentTranslator.Ardonment;
 using CommentTranslator.Util;
 using EnvDTE;
 using EnvDTE80;
+using Microsoft;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.Shell;
@@ -46,15 +47,9 @@ namespace CommentTranslator
         /// <param name="package">Owner package, not null.</param>
         private TranslateCommand(Package package)
         {
-            if (package == null)
-            {
-                throw new ArgumentNullException("package");
-            }
+            this.package = package ?? throw new ArgumentNullException("package");
 
-            this.package = package;
-
-            OleMenuCommandService commandService = this.ServiceProvider.GetService(typeof(IMenuCommandService)) as OleMenuCommandService;
-            if (commandService != null)
+            if (this.ServiceProvider.GetService(typeof(IMenuCommandService)) is OleMenuCommandService commandService)
             {
                 var menuCommandID = new CommandID(CommandSet, CommandId);
                 var menuItem = new MenuCommand(this.MenuItemCallback, menuCommandID);
@@ -100,8 +95,9 @@ namespace CommentTranslator
         /// <param name="e">Event args.</param>
         private void MenuItemCallback(object sender, EventArgs e)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             var dte = (DTE2)ServiceProvider.GetService(typeof(DTE));
-
+            Assumes.Present(dte);
             if (dte.ActiveDocument != null)
             {
                 var selection = (TextSelection)dte.ActiveDocument.Selection;
@@ -136,7 +132,9 @@ namespace CommentTranslator
         private IWpfTextView GetWpfView()
         {
             var textManager = (IVsTextManager)ServiceProvider.GetService(typeof(SVsTextManager));
+            Assumes.Present(textManager);
             var componentModel = (IComponentModel)this.ServiceProvider.GetService(typeof(SComponentModel));
+            Assumes.Present(componentModel);
             var editor = componentModel.GetService<IVsEditorAdaptersFactoryService>();
 
             textManager.GetActiveView(1, null, out IVsTextView textViewCurrent);

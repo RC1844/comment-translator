@@ -43,6 +43,7 @@ namespace CommentTranslator.Util
 
         private static OutputWindowPane GetWindow()
         {
+            Microsoft.VisualStudio.Shell.ThreadHelper.ThrowIfNotOnUIThread();
             var dte = (DTE2)Marshal.GetActiveObject("VisualStudio.DTE");
             return dte.ToolWindows.OutputWindow.ActivePane;
         }

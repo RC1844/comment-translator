@@ -35,13 +35,13 @@ namespace CommentTranslator.Support
     {
         protected readonly IWpfTextView _view;
         private Dictionary<SnapshotSpan, TAdornment> _adornmentCache = new Dictionary<SnapshotSpan, TAdornment>();
-        protected ITextSnapshot _snapshot { get; private set; }
+        protected ITextSnapshot Snapshot { get; private set; }
         private readonly List<SnapshotSpan> _invalidatedSpans = new List<SnapshotSpan>();
 
         protected IntraTextAdornmentTagger(IWpfTextView view)
         {
             this._view = view;
-            _snapshot = view.TextBuffer.CurrentSnapshot;
+            Snapshot = view.TextBuffer.CurrentSnapshot;
 
             this._view.LayoutChanged += HandleLayoutChanged;
             this._view.TextBuffer.Changed += HandleBufferChanged;
@@ -92,15 +92,15 @@ namespace CommentTranslator.Support
         {
             // Store the snapshot that we're now current with and send an event
             // for the text that has changed.
-            if (_snapshot != _view.TextBuffer.CurrentSnapshot)
+            if (Snapshot != _view.TextBuffer.CurrentSnapshot)
             {
-                _snapshot = _view.TextBuffer.CurrentSnapshot;
+                Snapshot = _view.TextBuffer.CurrentSnapshot;
 
                 Dictionary<SnapshotSpan, TAdornment> translatedAdornmentCache = new Dictionary<SnapshotSpan, TAdornment>();
 
                 foreach (var keyValuePair in _adornmentCache)
                 {
-                    var key = keyValuePair.Key.TranslateTo(_snapshot, SpanTrackingMode.EdgeInclusive);
+                    var key = keyValuePair.Key.TranslateTo(Snapshot, SpanTrackingMode.EdgeInclusive);
                     if (!translatedAdornmentCache.ContainsKey(key))
                     {
                         translatedAdornmentCache.Add(key, keyValuePair.Value);
@@ -113,7 +113,7 @@ namespace CommentTranslator.Support
             List<SnapshotSpan> translatedSpans;
             lock (_invalidatedSpans)
             {
-                translatedSpans = _invalidatedSpans.Select(s => s.TranslateTo(_snapshot, SpanTrackingMode.EdgeInclusive)).ToList();
+                translatedSpans = _invalidatedSpans.Select(s => s.TranslateTo(Snapshot, SpanTrackingMode.EdgeInclusive)).ToList();
                 _invalidatedSpans.Clear();
             }
 
@@ -160,7 +160,7 @@ namespace CommentTranslator.Support
 
             ITextSnapshot requestedSnapshot = spans[0].Snapshot;
 
-            var translatedSpans = new NormalizedSnapshotSpanCollection(spans.Select(span => span.TranslateTo(_snapshot, SpanTrackingMode.EdgeExclusive)));
+            var translatedSpans = new NormalizedSnapshotSpanCollection(spans.Select(span => span.TranslateTo(Snapshot, SpanTrackingMode.EdgeExclusive)));
 
             // Grab the adornments.
             foreach (var tagSpan in GetAdornmentTagsOnSnapshot(translatedSpans))
@@ -181,7 +181,7 @@ namespace CommentTranslator.Support
 
             ITextSnapshot snapshot = spans[0].Snapshot;
 
-            if (snapshot != this._snapshot)
+            if (snapshot != this.Snapshot)
                 yield break;
 
             // Since WPF UI objects have state (like mouse hover or animation) and are relatively expensive to create and lay out,
@@ -198,12 +198,11 @@ namespace CommentTranslator.Support
             foreach (var spanDataPair in GetAdornmentData(spans).Distinct(new Comparer()))
             {
                 // Look up the corresponding adornment or create one if it's new.
-                TAdornment adornment;
                 SnapshotSpan snapshotSpan = spanDataPair.Item1;
                 PositionAffinity? affinity = spanDataPair.Item2;
                 TData adornmentData = spanDataPair.Item3;
                 SnapshotSpan containSpan = spanDataPair.Item4;
-                if (_adornmentCache.TryGetValue(snapshotSpan, out adornment))
+                if (_adornmentCache.TryGetValue(snapshotSpan, out TAdornment adornment))
                 {
                     if (UpdateAdornment(adornment, adornmentData, snapshotSpan, containSpan))
                         toRemove.Remove(snapshotSpan);

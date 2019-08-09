@@ -97,6 +97,14 @@
       <Project>{2a68dd66-09d2-445b-87d6-12524872f402}</Project>
       <Name>CommentTranslator</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Framework\Framework.csproj">
+      <Project>{d01881d4-c3c4-49b3-9eb6-b5182d48d077}</Project>
+      <Name>Framework</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\RangeTree\RangeTree.csproj">
+      <Project>{3edbc791-beb0-41ed-8174-bfc4d5a2df6f}</Project>
+      <Name>RangeTree</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

@@ -88,10 +88,12 @@ namespace CommentTranslator.Ardonment
             };
 
             //Draw Line
-            _line = new Line();
-            _line.Stroke = Brushes.LightGray;
-            _line.StrokeThickness = 6;
-            _line.SnapsToDevicePixels = true;
+            _line = new Line
+            {
+                Stroke = Brushes.LightGray,
+                StrokeThickness = 6,
+                SnapsToDevicePixels = true
+            };
             _line.SetValue(RenderOptions.EdgeModeProperty, EdgeMode.Aliased);
 
             //Get format
@@ -188,7 +190,8 @@ namespace CommentTranslator.Ardonment
                                         FlowDirection.LeftToRight,
                                         _typeface,
                                         _fontSize,
-                                        Brushes.Black);
+                                        Brushes.Black,
+                                        1);
             }
             else
             {
@@ -198,7 +201,8 @@ namespace CommentTranslator.Ardonment
                                        FlowDirection.LeftToRight,
                                        new Typeface(_textBlock.FontFamily, _textBlock.FontStyle, _textBlock.FontWeight, _textBlock.FontStretch),
                                        _textBlock.FontSize,
-                                       Brushes.Black);
+                                       Brushes.Black,
+                                       1);
             }
         }
 
@@ -269,7 +273,7 @@ namespace CommentTranslator.Ardonment
 
                 //Translate comment
                 Task
-                    .Run(() => CommentTranslatorPackage.TranslateClient.Translate(comment.Content))
+                    .Run(() => CommentTranslatorPackage.TranslateClient.TranslateAsync(comment.Content))
                     .ContinueWith((data) =>
                     {
                         //Call translate complete
